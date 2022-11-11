@@ -1,0 +1,49 @@
+Code Design -
+For the code design we followed the instructions with 2 exceptions:
+
+First, we don’t have 11 uniforms (3-4 for each shader) as we thought that was too much.
+Instead we use 4 uniforms which we change each time the shader is changed using voidMainView::getUniforms(QOpenGLShaderProgram *shaderProgram);.
+
+Second, we don’t compute the light vector L and view vector V in the frag shader for phong shading as it is the same as it doesn’t make a difference because they are being averaged relative to the normal anyways.
+
+We don’t create additional classes, all the additional logic is in mainview.cpp.
+
+Difficulties -
+We spent a lot of time trying to get the normals to work because we overlooked the fact that normals are vectors with floats ranging from [-1..1] instead of [0..1] which made the cat look darker.
+After we got the normals to work the other two shaders were easy since we could reuse the code of raytracer1.
+
+Loading texture was challenging because for some reason we needed to add glGenerateMipmap(GL_TEXTURE_2D); otherwise we would simply get a black cat.
+This was bizarre because we don’t use Mipmaps.
+
+Controls -
+Buttons: 
+	Reset Rotation: Set rotation degree to 0.
+	Reset Scaling: Set scale to 1.
+	Phong: Show Phong shader effect.
+	Normal: Show Normal shader effect. 
+	Gouraud: Show Gouraud effect.
+Scale slider: Change the scale of an object.
+	Spin Button: from left to right: x - axis rotation,y - axis rotation and y - axis rotation. 
+Shortcuts:
+	None
+Mouse controls:
+	None
+	
+Discussion Shader (Normal) -
+The cat using the normal shader looks similar with or without the normal matrix transformation.
+The only difference is that when we rotate the cat, without the normal matrix the colors stay the same relative to the cat and with the normal matrix the colors stay the same relative to the view (red is up, blue is front, green is right).
+This difference is easier to see using the sphere object.
+
+Discussion Shader (Phong & Gourdaud) -
+It is pretty hard to see the difference between both shaders when n is high Phong tends to look better as the IR is less dependent on the rotation of the object and you can see triangles with Gouraud shading. 
+This is the most noticeable while rotating the cat (or other object) as the Phong shading will look smooth compared to the Gouraud shading.
+
+In addition, the color of gouraud is calculated in the vertshader_gouraud while the color of phong is calculated in the fragshader_phong.
+
+Discussion Wrapping Filter Methods -
+GL_TEXTURE_WRAP_S vs GL_TEXTURE_WRAP_T
+There is no difference because we don’t use texture wrapping in the .png file.
+
+GL_TEXTURE_MIN_FILTER vs GL_TEXTURE_MAG_FILTER
+The former makes the texture more detailed while the ladder makes the texture less detailed.
+
